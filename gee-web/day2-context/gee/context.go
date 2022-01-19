@@ -6,16 +6,17 @@ import (
 	"net/http"
 )
 
+// 起别名 gee.H
 type H map[string]interface{}
 
 type Context struct {
-	// origin objects
+	// origin objects  net/http包里的
 	Writer http.ResponseWriter
 	Req    *http.Request
-	// request info
+	// request info   需要关注的请求信息
 	Path   string
 	Method string
-	// response info
+	// response info  需要关注得响应得信息
 	StatusCode int
 }
 
@@ -28,11 +29,14 @@ func newContext(w http.ResponseWriter, req *http.Request) *Context {
 	}
 }
 
+// 提供给用户调用的函数
 func (c *Context) PostForm(key string) string {
 	return c.Req.FormValue(key)
 }
 
+//
 func (c *Context) Query(key string) string {
+	// func (u *URL) Query() Values
 	return c.Req.URL.Query().Get(key)
 }
 
@@ -42,9 +46,12 @@ func (c *Context) Status(code int) {
 }
 
 func (c *Context) SetHeader(key string, value string) {
-	c.Writer.Header().Set(key, value)
+	//func (ResponseWriter) Header() Header
+	// func (h Header) Set(key string, value string)
+	c.Writer.Header().Set(key, value) // 链式调用
 }
 
+// 快速构建String类型的响应
 func (c *Context) String(code int, format string, values ...interface{}) {
 	c.SetHeader("Content-Type", "text/plain")
 	c.Status(code)

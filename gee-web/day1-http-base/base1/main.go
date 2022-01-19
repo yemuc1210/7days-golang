@@ -14,11 +14,13 @@ import (
 
 func main() {
 	http.HandleFunc("/", indexHandler)
+	//响应hello 路由的函数
 	http.HandleFunc("/hello", helloHandler)
+	// handler:nil  使用标准库中得实例处理
 	log.Fatal(http.ListenAndServe(":9999", nil))
 }
 
-// handler echoes r.URL.Path
+// 输出 r.URL.Path   request中的url
 func indexHandler(w http.ResponseWriter, req *http.Request) {
 	fmt.Fprintf(w, "URL.Path = %q\n", req.URL.Path)
 }

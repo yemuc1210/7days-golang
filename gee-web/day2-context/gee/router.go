@@ -4,6 +4,7 @@ import (
 	"net/http"
 )
 
+// 和路由相关的 方法和结构 封装
 type router struct {
 	handlers map[string]HandlerFunc
 }
