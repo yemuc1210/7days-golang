@@ -5,10 +5,13 @@ import (
 	"net/http"
 )
 
+// 框架入口gee.go
+
 // HandlerFunc defines the request handler used by gee
-type HandlerFunc func(*Context)
+type HandlerFunc func(c *Context)
 
 // Engine implement the interface of ServeHTTP
+// Engine 实现ServeHTTP接口 那么 HTTP请求就可以被移交给Engine实例
 type Engine struct {
 	router *router
 }
@@ -20,6 +23,7 @@ func New() *Engine {
 
 func (engine *Engine) addRoute(method string, pattern string, handler HandlerFunc) {
 	log.Printf("Route %4s - %s", method, pattern)
+	// 调用router中的函数  进行一层封装
 	engine.router.addRoute(method, pattern, handler)
 }
 
@@ -39,6 +43,7 @@ func (engine *Engine) Run(addr string) (err error) {
 }
 
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
-	c := newContext(w, req)
+	c := newContext(w, req) // 先构建一个context对象
+	// 查找是否有对应的处理函数 调用其进行处理
 	engine.router.handle(c)
 }

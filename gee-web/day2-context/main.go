@@ -30,7 +30,9 @@ import (
 
 func main() {
 	r := gee.New()
+	// Handler的参数变成gee.Context 提供Query/PostForm参数功能
 	r.GET("/", func(c *gee.Context) {
+		// 封装了HTML函数 快速构建 HTTP响应
 		c.HTML(http.StatusOK, "<h1>Hello Gee</h1>")
 	})
 	r.GET("/hello", func(c *gee.Context) {

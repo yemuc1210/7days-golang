@@ -15,8 +15,10 @@ import (
 )
 
 // Engine is the uni handler for all requests
+//Engin结构体实现ServeHTTP方法 满足了Handler接口
 type Engine struct{}
 
+// HTTP请求会交给该实例处理
 func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 	switch req.URL.Path {
 	case "/":
@@ -32,5 +34,12 @@ func (engine *Engine) ServeHTTP(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 	engine := new(Engine)
+	// 所有的HTTP请求会转向自定义的处理逻辑了！
 	log.Fatal(http.ListenAndServe(":9999", engine))
+	/**
+	在实现Engine之前，我们调用 http.HandleFunc 实现了路由和Handler的映射，
+	也就是只能针对具体的路由写处理逻辑。比如/hello。
+	但是在实现Engine之后，我们拦截了所有的HTTP请求，拥有了统一的控制入口。
+	在这里我们可以自由定义路由映射的规则，也可以统一添加一些处理逻辑，例如日志、异常处理等。
+	*/
 }
