@@ -71,6 +71,7 @@ func (p *HTTPPool) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Write the value to the response body as a proto message.
+	// 数据格式换为protobuf
 	body, err := proto.Marshal(&pb.Response{Value: view.ByteSlice()})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -132,6 +133,7 @@ func (h *httpGetter) Get(in *pb.Request, out *pb.Response) error {
 		return fmt.Errorf("reading response body: %v", err)
 	}
 
+	// 数据解码 protobuf格式
 	if err = proto.Unmarshal(bytes, out); err != nil {
 		return fmt.Errorf("decoding response body: %v", err)
 	}

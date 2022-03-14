@@ -8,7 +8,8 @@ import (
 	"sync"
 )
 
-// A Group is a cache namespace and associated data loaded spread over
+//A Group is a cache namespace and associated data loaded spread over
+// 缓存命名空间，相关数据加载，与用户交互的窗口
 type Group struct {
 	name      string
 	getter    Getter
@@ -25,6 +26,7 @@ type Getter interface {
 }
 
 // A GetterFunc implements Getter with a function.
+// 接口型函数
 type GetterFunc func(key string) ([]byte, error)
 
 // Get implements Getter interface function
@@ -48,7 +50,8 @@ func NewGroup(name string, cacheBytes int64, getter Getter) *Group {
 		name:      name,
 		getter:    getter,
 		mainCache: cache{cacheBytes: cacheBytes},
-		loader:    &singleflight.Group{},
+		// 新增
+		loader: &singleflight.Group{},
 	}
 	groups[name] = g
 	return g
@@ -88,7 +91,9 @@ func (g *Group) RegisterPeers(peers PeerPicker) {
 func (g *Group) load(key string) (value ByteView, err error) {
 	// each key is only fetched once (either locally or remotely)
 	// regardless of the number of concurrent callers.
+	// 无论有多少并发调用者，key只会被请求一次
 	viewi, err := g.loader.Do(key, func() (interface{}, error) {
+		// fn 函数体  远程调用时，也只会发起一个http调用
 		if g.peers != nil {
 			if peer, ok := g.peers.PickPeer(key); ok {
 				if value, err = g.getFromPeer(peer, key); err == nil {
@@ -123,10 +128,12 @@ func (g *Group) getLocally(key string) (ByteView, error) {
 }
 
 func (g *Group) getFromPeer(peer PeerGetter, key string) (ByteView, error) {
+	// 修改，适应protobuf的使用
 	req := &pb.Request{
 		Group: g.name,
 		Key:   key,
 	}
+	// 修改，适应protobuf的使用
 	res := &pb.Response{}
 	err := peer.Get(req, res)
 	if err != nil {

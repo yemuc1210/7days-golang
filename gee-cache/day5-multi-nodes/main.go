@@ -16,6 +16,7 @@ import (
 	"net/http"
 )
 
+// 本地数据
 var db = map[string]string{
 	"Tom":  "630",
 	"Jack": "589",
@@ -24,6 +25,7 @@ var db = map[string]string{
 
 func createGroup() *geecache.Group {
 	return geecache.NewGroup("scores", 2<<10, geecache.GetterFunc(
+		// Getter 规则
 		func(key string) ([]byte, error) {
 			log.Println("[SlowDB] search key", key)
 			if v, ok := db[key]; ok {
@@ -33,14 +35,21 @@ func createGroup() *geecache.Group {
 		}))
 }
 
+// 启动缓存服务器
+// 创建HTTPPool，添加节点信息，注册到Cache
+// 启动并监听
 func startCacheServer(addr string, addrs []string, gee *geecache.Group) {
+	// HTTPPool 是全局的
 	peers := geecache.NewHTTPPool(addr)
+	// 设置 更新 peers 列表
 	peers.Set(addrs...)
+	// 一个命名空间的peers
 	gee.RegisterPeers(peers)
 	log.Println("geecache is running at", addr)
 	log.Fatal(http.ListenAndServe(addr[7:], peers))
 }
 
+// 启动一个API服务，与用户交互
 func startAPIServer(apiAddr string, gee *geecache.Group) {
 	http.Handle("/api", http.HandlerFunc(
 		func(w http.ResponseWriter, r *http.Request) {
@@ -52,7 +61,6 @@ func startAPIServer(apiAddr string, gee *geecache.Group) {
 			}
 			w.Header().Set("Content-Type", "application/octet-stream")
 			w.Write(view.ByteSlice())
-
 		}))
 	log.Println("fontend server is running at", apiAddr)
 	log.Fatal(http.ListenAndServe(apiAddr[7:], nil))

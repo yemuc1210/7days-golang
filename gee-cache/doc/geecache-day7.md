@@ -27,9 +27,9 @@ book_title: Day7 使用 Protobuf 通信
 
 ## 1 为什么要使用 protobuf
 
-> protobuf 即 Protocol Buffers，Google 开发的一种数据描述语言，是一种轻便高效的结构化数据存储格式，与语言、平台无关，可扩展可序列化。protobuf 以二进制方式存储，占用空间小。
+> protobuf 即 Protocol Buffers，Google 开发的一种数据描述语言，是一种轻便高效的结构化数据存储格式，与语言、平台无关，可扩展可序列化。protobuf 以**二进制方式存储，**占用空间小。
 
-protobuf 的安装和使用教程请移步 [Go Protobuf 简明教程](https://geektutu.com/post/quick-go-protobuf.html)，这篇文章就不再赘述了。protobuf 广泛地应用于远程过程调用(RPC) 的二进制传输，使用 protobuf 的目的非常简单，为了获得更高的性能。传输前使用 protobuf 编码，接收方再进行解码，可以显著地降低二进制传输的大小。另外一方面，protobuf 可非常适合传输结构化数据，便于通信字段的扩展。
+protobuf 的安装和使用教程请移步 [Go Protobuf 简明教程](https://geektutu.com/post/quick-go-protobuf.html)，这篇文章就不再赘述了。protobuf 广泛地应用于远程过程调用(RPC) 的二进制传输，使用 protobuf 的目的非常简单，为了获得更高的性能。传输前使用 protobuf 编码，接收方再进行解码，可以显著地降低**二进制传输**的大小。另外一方面，protobuf 可非常适合传输**结构化数据**，便于通信字段的扩展。
 
 使用 protobuf 一般分为以下 2 步：
 
@@ -61,7 +61,7 @@ service GroupCache {
 }
 ```
 
-- `Request` 包含 2 个字段， group 和 cache，这与我们之前定义的接口 `/_geecache/<group>/<name>` 所需的参数吻合。
+- `Request` 包含 2 个字段， group 和 key，这与我们之前定义的接口 `/_geecache/<group>/<name>` 所需的参数吻合。
 - `Response` 包含 1 个字段，bytes，类型为 byte 数组，与之前吻合。
 
 生成 `geecache.pb.go`

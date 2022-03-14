@@ -1,8 +1,10 @@
+// 声明版本 默认时proto2 ，使用3需要特别声明
 syntax = "proto3";
 
 package geecachepb;
 
 message Request {
+//   数字1 2 是变量的标识
   string group = 1;
   string key = 2;
 }

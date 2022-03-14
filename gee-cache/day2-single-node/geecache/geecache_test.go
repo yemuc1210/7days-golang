@@ -14,6 +14,7 @@ var db = map[string]string{
 }
 
 func TestGetter(t *testing.T) {
+	// 自定义回调函数
 	var f Getter = GetterFunc(func(key string) ([]byte, error) {
 		return []byte(key), nil
 	})
@@ -26,13 +27,16 @@ func TestGetter(t *testing.T) {
 
 func TestGet(t *testing.T) {
 	loadCounts := make(map[string]int, len(db))
+	//
 	gee := NewGroup("scores", 2<<10, GetterFunc(
 		func(key string) ([]byte, error) {
 			log.Println("[SlowDB] search key", key)
+			// 读本地缓存，本地缓存为字典形式
 			if v, ok := db[key]; ok {
 				if _, ok := loadCounts[key]; !ok {
 					loadCounts[key] = 0
 				}
+				// 本地缓存被命中次数
 				loadCounts[key]++
 				return []byte(v), nil
 			}
