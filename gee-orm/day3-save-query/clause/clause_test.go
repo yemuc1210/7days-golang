@@ -7,6 +7,7 @@ import (
 
 func TestClause_Set(t *testing.T) {
 	var clause Clause
+	// 第一个参数是表名，这是约定，后面是参数-字段名
 	clause.Set(INSERT, "User", []string{"Name", "Age"})
 	sql := clause.sql[INSERT]
 	vars := clause.sqlVars[INSERT]

@@ -5,10 +5,14 @@ import (
 	"strings"
 )
 
+// 首先实现各个子句的生成规则
+
+// 函数变量
 type generator func(values ...interface{}) (string, []interface{})
 
 var generators map[Type]generator
 
+// 利用init函数进行注册
 func init() {
 	generators = make(map[Type]generator)
 	generators[INSERT] = _insert
@@ -27,6 +31,7 @@ func genBindVars(num int) string {
 	return strings.Join(vars, ", ")
 }
 
+// 插入操作
 func _insert(values ...interface{}) (string, []interface{}) {
 	// INSERT INTO $tableName ($fields)
 	tableName := values[0]

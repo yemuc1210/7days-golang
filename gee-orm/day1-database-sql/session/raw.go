@@ -21,6 +21,7 @@ func New(db *sql.DB) *Session {
 
 // Clear initialize the state of a session
 func (s *Session) Clear() {
+	// 清空
 	s.sql.Reset()
 	s.sqlVars = nil
 }
@@ -34,6 +35,7 @@ func (s *Session) DB() *sql.DB {
 func (s *Session) Exec() (result sql.Result, err error) {
 	defer s.Clear()
 	log.Info(s.sql.String(), s.sqlVars)
+	// 对sql.DB.Exec进行封装
 	if result, err = s.DB().Exec(s.sql.String(), s.sqlVars...); err != nil {
 		log.Error(err)
 	}
@@ -42,6 +44,7 @@ func (s *Session) Exec() (result sql.Result, err error) {
 
 // QueryRow gets a record from db
 func (s *Session) QueryRow() *sql.Row {
+	// 清楚传入的sql语句
 	defer s.Clear()
 	log.Info(s.sql.String(), s.sqlVars)
 	return s.DB().QueryRow(s.sql.String(), s.sqlVars...)

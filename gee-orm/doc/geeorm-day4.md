@@ -50,7 +50,7 @@ const (
 )
 ```
 
-第二步：实现对应字句的 generator，并注册到全局变量 `generators` 中
+第二步：实现对应子句的 generator，并注册到全局变量 `generators` 中
 
 [day4-chain-operation/clause/generator.go](https://github.com/geektutu/7days-golang/tree/master/gee-orm/day4-chain-operation/clause)
 

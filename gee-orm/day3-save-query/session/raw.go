@@ -12,12 +12,15 @@ import (
 // Session keep a pointer to sql.DB and provides all execution of all
 // kind of database operations.
 type Session struct {
-	db       *sql.DB
+	db *sql.DB
+	// dialect 处理不同数据库之间的差异
 	dialect  dialect.Dialect
 	refTable *schema.Schema
-	clause   clause.Clause
-	sql      strings.Builder
-	sqlVars  []interface{}
+	// 为Session添加成员变量clause
+	// 使用clause可以生成简单的插入和查询SQL语句
+	clause  clause.Clause
+	sql     strings.Builder
+	sqlVars []interface{}
 }
 
 // New creates a instance of Session
@@ -32,6 +35,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
+	// 重新清空，复用
 	s.clause = clause.Clause{}
 }
 

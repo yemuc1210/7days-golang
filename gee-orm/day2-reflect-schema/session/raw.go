@@ -10,15 +10,19 @@ import (
 
 // Session keep a pointer to sql.DB and provides all execution of all
 // kind of database operations.
+// 对Session 结构做出调整
 type Session struct {
-	db       *sql.DB
-	dialect  dialect.Dialect
+	db *sql.DB
+	// 新增dialect
+	dialect dialect.Dialect
+	// 新增refTable
 	refTable *schema.Schema
 	sql      strings.Builder
 	sqlVars  []interface{}
 }
 
 // New creates a instance of Session
+// 构造函数参数，增加dialect
 func New(db *sql.DB, dialect dialect.Dialect) *Session {
 	return &Session{
 		db:      db,
