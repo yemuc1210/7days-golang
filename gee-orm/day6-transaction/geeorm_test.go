@@ -32,9 +32,11 @@ func transactionRollback(t *testing.T) {
 	defer engine.Close()
 	s := engine.NewSession()
 	_ = s.Model(&User{}).DropTable()
+	// 入参：回调函数
+	//type TxFunc func(*session.Session) (interface{}, error)
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
-		_ = s.Model(&User{}).CreateTable()
-		_, err = s.Insert(&User{"Tom", 18})
+		_ = s.Model(&User{}).CreateTable()    // 创建一个表
+		_, err = s.Insert(&User{"Tom", 18})// 插入记录
 		return nil, errors.New("Error")
 	})
 	if err == nil || s.HasTable() {

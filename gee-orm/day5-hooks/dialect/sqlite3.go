@@ -5,9 +5,9 @@ import (
 	"reflect"
 	"time"
 )
-
+// 在dialect目录新建sqlite3.go文件，增加对SQLite的支持
 type sqlite3 struct{}
-
+// 编译器检查是否实现Dialect接口
 var _ Dialect = (*sqlite3)(nil)
 
 func init() {
@@ -15,6 +15,7 @@ func init() {
 }
 
 // Get Data Type for sqlite3 Dialect
+// 将Go数据类型映射成SQLite的数据类型
 func (s *sqlite3) DataTypeOf(typ reflect.Value) string {
 	switch typ.Kind() {
 	case reflect.Bool:

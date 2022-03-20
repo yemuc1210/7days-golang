@@ -13,9 +13,14 @@ import (
 // kind of database operations.
 type Session struct {
 	db       *sql.DB
+	// dialect 处理不同数据库之间的差异
 	dialect  dialect.Dialect
+	// Session中新增*sql.Tx成员，增加对事务的支持
 	tx       *sql.Tx
+	// 表实例是schema
 	refTable *schema.Schema
+	// 为Session添加成员变量clause
+	// 使用clause可以生成简单的插入和查询SQL语句
 	clause   clause.Clause
 	sql      strings.Builder
 	sqlVars  []interface{}
@@ -30,6 +35,7 @@ func New(db *sql.DB, dialect dialect.Dialect) *Session {
 }
 
 // Clear initialize the state of a session
+// 初始化session状态，实现了复用
 func (s *Session) Clear() {
 	s.sql.Reset()
 	s.sqlVars = nil
@@ -37,12 +43,14 @@ func (s *Session) Clear() {
 }
 
 // CommonDB is a minimal function set of db
+// 最小功能集
 type CommonDB interface {
 	Query(query string, args ...interface{}) (*sql.Rows, error)
 	QueryRow(query string, args ...interface{}) *sql.Row
 	Exec(query string, args ...interface{}) (sql.Result, error)
 }
-
+//####################################------day6
+// 编译器检查是否实现接口
 var _ CommonDB = (*sql.DB)(nil)
 var _ CommonDB = (*sql.Tx)(nil)
 
@@ -53,6 +61,7 @@ func (s *Session) DB() CommonDB {
 	}
 	return s.db
 }
+//###################################
 
 // Exec raw sql with sqlVars
 func (s *Session) Exec() (result sql.Result, err error) {

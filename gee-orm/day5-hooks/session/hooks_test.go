@@ -12,12 +12,14 @@ type Account struct {
 
 func (account *Account) BeforeInsert(s *Session) error {
 	log.Info("before inert", account)
+	//`BeforeInsert` 将 account.ID 的值增加 1000
 	account.ID += 1000
 	return nil
 }
 
 func (account *Account) AfterQuery(s *Session) error {
 	log.Info("after query", account)
+	//`AfterQuery` 将密码脱敏，显示为 6 个 `*`。
 	account.Password = "******"
 	return nil
 }

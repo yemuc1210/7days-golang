@@ -1,6 +1,9 @@
 package session
 
 import "geeorm/log"
+// day6 新增文件，用于封装事务的Begin Commit Rollback三个接口
+// 封装有利于同意打印日志，方便定位问题
+// Session->*sql.Tx对象调用
 
 // Begin a transaction
 func (s *Session) Begin() (err error) {

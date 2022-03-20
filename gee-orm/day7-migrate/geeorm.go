@@ -77,6 +77,7 @@ func (engine *Engine) Transaction(f TxFunc) (result interface{}, err error) {
 	return f(s)
 }
 
+//##########################  day7   数据库迁移
 // difference returns a - b
 func difference(a []string, b []string) (diff []string) {
 	mapB := make(map[string]bool)
@@ -85,6 +86,7 @@ func difference(a []string, b []string) (diff []string) {
 	}
 	for _, v := range a {
 		if _, ok := mapB[v]; !ok {
+			// a 有b 没有的
 			diff = append(diff, v)
 		}
 	}
@@ -92,16 +94,23 @@ func difference(a []string, b []string) (diff []string) {
 }
 
 // Migrate table
+// 迁移表
 func (engine *Engine) Migrate(value interface{}) error {
+	// 使用事务进行数据库表的迁移
 	_, err := engine.Transaction(func(s *session.Session) (result interface{}, err error) {
+		// 首先判断表是否存在  Model()方法解析，将对象实例解析为数据库表
 		if !s.Model(value).HasTable() {
 			log.Infof("table %s doesn't exist", s.RefTable().Name)
 			return nil, s.CreateTable()
 		}
+		// 传入的表结构，对应信标
 		table := s.RefTable()
 		rows, _ := s.Raw(fmt.Sprintf("SELECT * FROM %s LIMIT 1", table.Name)).QueryRows()
+		// 从数据库查到的信息，对应旧表
 		columns, _ := rows.Columns()
+		// table.FieldNames 信标    新表-旧表=新增字段
 		addCols := difference(table.FieldNames, columns)
+		// 旧表-新表=删除字段
 		delCols := difference(columns, table.FieldNames)
 		log.Infof("added cols %v, deleted cols %v", addCols, delCols)
 
@@ -118,7 +127,10 @@ func (engine *Engine) Migrate(value interface{}) error {
 		}
 		tmp := "tmp_" + table.Name
 		fieldStr := strings.Join(table.FieldNames, ", ")
+		// 删除表字段的操作：
+		// 1、 创建新表：仅创建想保留的字段   2. 删除旧表  3.重命名
 		s.Raw(fmt.Sprintf("CREATE TABLE %s AS SELECT %s from %s;", tmp, fieldStr, table.Name))
+		//
 		s.Raw(fmt.Sprintf("DROP TABLE %s;", table.Name))
 		s.Raw(fmt.Sprintf("ALTER TABLE %s RENAME TO %s;", tmp, table.Name))
 		_, err = s.Exec()

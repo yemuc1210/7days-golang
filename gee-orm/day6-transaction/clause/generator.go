@@ -4,11 +4,15 @@ import (
 	"fmt"
 	"strings"
 )
+// 首先实现各个子句的生成规则
+// 然后在record.go中按照一定的顺序拼接
 
 type generator func(values ...interface{}) (string, []interface{})
 
+// 支持的generator，使用字典存储
 var generators map[Type]generator
 
+// 利用init函数进行注册
 func init() {
 	generators = make(map[Type]generator)
 	generators[INSERT] = _insert
@@ -17,6 +21,7 @@ func init() {
 	generators[LIMIT] = _limit
 	generators[WHERE] = _where
 	generators[ORDERBY] = _orderBy
+	// 新增更新、更新和计数功能
 	generators[UPDATE] = _update
 	generators[DELETE] = _delete
 	generators[COUNT] = _count
@@ -80,8 +85,12 @@ func _orderBy(values ...interface{}) (string, []interface{}) {
 	return fmt.Sprintf("ORDER BY %s", values[0]), []interface{}{}
 }
 
+// 更新操作
 func _update(values ...interface{}) (string, []interface{}) {
+	// 约定：第一个参数是表明，后面是更新
 	tableName := values[0]
+	// 第二个参数是【字段名-值】的字典
+	// 表示待更新的键值对
 	m := values[1].(map[string]interface{})
 	var keys []string
 	var vars []interface{}
@@ -89,13 +98,18 @@ func _update(values ...interface{}) (string, []interface{}) {
 		keys = append(keys, k+" = ?")
 		vars = append(vars, v)
 	}
+	// 调用形式是UPDATE(tableName, map{age:18, name:"xx"})
 	return fmt.Sprintf("UPDATE %s SET %s", tableName, strings.Join(keys, ", ")), vars
 }
 
 func _delete(values ...interface{}) (string, []interface{}) {
+	// 唯一的参数是表名
 	return fmt.Sprintf("DELETE FROM %s", values[0]), []interface{}{}
 }
 
 func _count(values ...interface{}) (string, []interface{}) {
+	// 复用select 生成器，
+	// select fieldName from tableName,  此处FielfName部分为count(*)
+	// select count(*) from tableName
 	return _select(values[0], []string{"count(*)"})
 }

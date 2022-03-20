@@ -4,6 +4,10 @@ import (
 	"strings"
 )
 
+// Clause: 子句
+// 查询语句可以包含许多子句
+// 构造完整SQL语句放在Clause包
+
 // Clause contains SQL conditions
 type Clause struct {
 	sql     map[Type]string
@@ -13,7 +17,8 @@ type Clause struct {
 // Type is the type of Clause
 type Type int
 
-// Support types for Clause
+// 定义Clause支持的类型
+// 对应子句的generator，定义在generators中
 const (
 	INSERT Type = iota
 	VALUES
@@ -21,8 +26,12 @@ const (
 	LIMIT
 	WHERE
 	ORDERBY
+	// UPDATE 新增加三个类型
+	// 实现更新
 	UPDATE
+	// DELETE 删除
 	DELETE
+	// COUNT 统计
 	COUNT
 )
 
